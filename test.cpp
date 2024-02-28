@@ -1,7 +1,6 @@
 //This file is just for testing
 #include <iostream> //preprocessor directives
 #include <windows.h>
-#include "encryption.hpp"
 #include "headings.hpp"
 using namespace std; //using directive
 
@@ -9,7 +8,7 @@ using namespace std; //using directive
 int main()
 {
     system("cls");
-    starting_instructions();
+    startinginstructions();
 
     return 0; //return main value
 }

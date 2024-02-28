@@ -37,11 +37,12 @@ private:
     // password will be store in encrypted form only
     std::string password;
 
+    // data member to store name
     std::string librarianName;
+
     const int SHIFT_VALUE{7}; // shift key
 
     // utility functions
-
     void encryptPassword(std::string& value) // function to shift every letter in password
     {
         for(char& element : value)
