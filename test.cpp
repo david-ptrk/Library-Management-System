@@ -9,7 +9,7 @@ using namespace std; //using directive
 int main()
 {
     system("cls");
-    starting_instructions();    
+    starting_instructions();
 
     return 0; //return main value
 }
