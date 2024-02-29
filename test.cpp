@@ -8,7 +8,7 @@ using namespace std; //using directive
 int main()
 {
     system("cls");
-    startinginstructions();
+    startingInstructions();
 
     return 0; //return main value
 }

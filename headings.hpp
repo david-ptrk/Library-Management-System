@@ -12,7 +12,7 @@ void newLibrarian(void); // function to create new Librarian
 void showOptions(void); // navigation options of library
 void doFunction(int); // call proper function as specified by user
 
-void startinginstructions(void)
+void startingInstructions()
 {
     // welcome display
     std::cout << "------------------------------------------------" << std::endl;
@@ -108,7 +108,7 @@ void showOptions() // library navigation
     }
     
     std::cout << "\nThankYou!" << std::endl;
-    exit(EXIT_SUCCESS);
+    // exit(EXIT_SUCCESS);
 }
 
 void doFunction(int choice)
