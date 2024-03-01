@@ -1,6 +1,9 @@
+// This header file consist of class Password. This class is used to encrpyt user password. As an object of class Password is instantiated, the password is already stored in encrypted form.
+
 #ifndef ENCRYPTION_HPP
 #define ENCRYPTION_HPP
 
+// preprocessor directives
 #include <string>
 #include <cctype>
 #include <sstream>
@@ -16,7 +19,8 @@ public:
             setPassword(password);
         }
 
-    // setPassword to call encryption it is only member function accessed outside of class
+    // setPassword to call encryption
+    // setPassword can be accessed outside of class
     void setPassword(std::string value)
     {
         encryptPassword(value); // encrypt the password
@@ -25,6 +29,7 @@ public:
         return;
     }
 
+    // to return encryted password attached with user name
     std::string getDetails(void) const
     {
         std::ostringstream output;
@@ -40,7 +45,8 @@ private:
     // data member to store name
     std::string librarianName;
 
-    const int SHIFT_VALUE{7}; // shift key
+    // shift key
+    const int SHIFT_VALUE{7};
 
     // utility functions
     void encryptPassword(std::string& value) // function to shift every letter in password
