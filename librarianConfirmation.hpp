@@ -3,7 +3,43 @@
 
 #include <iostream>
 #include <fstream>
+#include <conio.h>
+#include <string>
 #include "encryption.hpp"
+
+enum IN
+{
+    IN_BACK = 8,
+    IN_RET = 13
+};
+
+std::string getPassword(char sp = '*')
+{
+    std::string password = "";
+    char ch_ipt;
+
+    while(true)
+    {
+        ch_ipt = getch();
+
+        if(ch_ipt == IN::IN_RET) {
+            std::cout << std::endl;
+            return password;
+        }
+        else if((ch_ipt == IN::IN_BACK) && (password.length() != 0)) {
+            password.pop_back();
+            std::cout << "\b \b";
+
+            continue;
+        }
+        else if((ch_ipt == IN::IN_BACK) && (password.length() == 0)) {
+            continue;
+        }
+
+        password.push_back(ch_ipt);
+        std::cout << sp;
+    }
+}
 
 bool librarianLogin()
 {
@@ -13,30 +49,27 @@ bool librarianLogin()
         exit(EXIT_FAILURE);
     }
 
-    // reading librarian record form the file
-    std::string fileRecord;
-    getline(dataFile, fileRecord);
-
     std::string name, password;
 
     std::cout << "\nEnter your Name: ";
-    // std::cin.ignore();
     getline(std::cin, name);
     std::cout << "Enter your Password: ";
-    std::cin >> password;
+    password = getPassword();
 
     Password loginPerson{name, password};
-
     std::string thisData = loginPerson.getDetails();
 
+    std::string fileRecord;
+    while(getline(dataFile, fileRecord))
+    {
+        if(fileRecord == thisData) {
+            dataFile.close();
+            return true;
+        }
+    }
+    
     dataFile.close();
-
-    if(fileRecord == thisData) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return false;
 }
 
 #endif

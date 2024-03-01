@@ -61,7 +61,7 @@ void newLibrarian(void) // to create new librarian
     std::cout << "\nEnter your Name: ";
     getline(std::cin, name);
     std::cout << "Enter new Password (only letters or digits): ";
-    std::cin >> password;
+    password = getPassword();
 
     // create Password object to encrypt password and store it in file
     Password newPerson{name, password};
@@ -114,7 +114,7 @@ void doFunction(int choice) // to call specified function as entered by user
     switch(choice)
     {
         case 1: // new librarian
-
+            addNewLibrarian();
             break;
         case 2: // new books
             addNewBooks();
@@ -143,6 +143,7 @@ void doFunction(int choice) // to call specified function as entered by user
             break;
     }
 
+    std::cout << "\n\nPress any key to continue...";
     getch(); // wait for a key
     system("cls"); // clear screen
 

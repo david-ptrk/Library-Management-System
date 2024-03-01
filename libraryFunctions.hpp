@@ -10,6 +10,39 @@
 #include "book.hpp"
 #include "librarianConfirmation.hpp"
 
+// 1 - Add New Librarian
+void addNewLibrarian()
+{
+    system("cls");
+
+    std::cin.ignore();
+    if(librarianLogin()) {
+        std::string name, password;
+
+        system("cls");
+        std::cout << "Enter New Librarian Name: ";
+        getline(std::cin, name);
+        std::cout << "Enter new Password (only letters or digits): ";
+        password = getPassword();
+
+        Password newPerson{name, password};
+
+        std::fstream file{"librarian.txt", std::ios::in | std::ios::out | std::ios::app};
+        if(!file) {
+            std::cerr << "librarian file doesn't open";
+            exit(EXIT_FAILURE);
+        }
+
+        file << newPerson.getDetails() << '\n';
+        std::cout << "\nLibrarian Added";
+    }
+    else {
+        std::cout << "\nAccess Denied";
+    }
+
+    return;
+}
+
 // 2 - Add New Books
 void addNewBooks()
 {
@@ -63,7 +96,7 @@ void addNewBooks()
         }while(next == 1);
     }
     else {
-        std::cout << "\nAccess Denied" << std::endl;
+        std::cout << "\nAccess Denied";
     }
 
     return;
