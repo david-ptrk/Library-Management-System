@@ -108,7 +108,7 @@ void showOptions() // library navigation
     }
     
     std::cout << "\nThankYou!" << std::endl;
-    // exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }
 
 void doFunction(int choice)
