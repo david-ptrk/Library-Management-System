@@ -7,35 +7,35 @@
 #include <string>
 #include <cctype>
 #include <sstream>
+#include <exception>
 
 // class will encrypt the password entered by librarian
-// password will be store on a sequential file along with librarian data
+// if return name and encryted password concatenated
 class Password
 {
 public:
     // contructor
-    Password(std::string name, std::string password)
+    Password(std::string name, std::string password) // cannot instantiate object without name and password supplied
         : librarianName{name} {
-            setPassword(password);
+            setPassword(password); // call 'setPassword' to encrypt it
         }
 
-    // setPassword to call encryption
     // setPassword can be accessed outside of class
     void setPassword(std::string value)
     {
-        encryptPassword(value); // encrypt the password
-        this->password = value; // store in data member
+        encryptPassword(value); // call 'encryptPassword' to encrypt the password
+        this->password = value; // store in data member 'password'
 
-        return;
+        return; // return control
     }
 
     // to return encryted password attached with user name
     std::string getDetails(void) const
     {
         std::ostringstream output;
-        output << librarianName << password;
+        output << librarianName << password; // concatenate both
 
-        return output.str();
+        return output.str(); // return them as string
     }
 private:
     // data member to store password
@@ -46,28 +46,37 @@ private:
     std::string librarianName;
 
     // shift key
+    // it is used to encrypt the password
     const int SHIFT_VALUE{7};
 
     // utility functions
     void encryptPassword(std::string& value) // function to shift every letter in password
     {
+        // loop to interate over every character of 'value' i.e. password entered by user
         for(char& element : value)
         {
+            // if character is lower-case
             if(islower(element)) {
-                shiftCharacter(element, 'a', 'z'); // for lower-case letter
+                shiftCharacter(element, 'a', 'z'); // to shift character in range a-z
             }
+            // if character is upper-case
             else if(isupper(element)) {
-                shiftCharacter(element, 'A', 'Z'); // for upper-case letter
+                shiftCharacter(element, 'A', 'Z'); // to shift character in range A-Z
             }
+            // if character is digit
             else if(isdigit(element)) {
-                shiftCharacter(element, '0', '9'); // for digit in password
+                shiftCharacter(element, '0', '9'); // to shift character in range 0-9
+            }
+            // no other character is allowed
+            else {
+                throw std::runtime_error{"password must be between a-z, A-Z, 0-9"}; // throw an exception
             }
         }
 
-        return;
+        return; // return control
     }
 
-    void shiftCharacter(char& character, char start, char end) // to shift individual letter by shift key
+    void shiftCharacter(char& character, char start, char end) // to shift each individual letter by shift key
     {
         for(int i{1}; i <= SHIFT_VALUE; ++i)
         {
@@ -79,7 +88,7 @@ private:
             }
         }
 
-        return;
+        return; // return control
     }
 };
 

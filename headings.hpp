@@ -1,4 +1,4 @@
-// This header file 'headings.hpp' consist of basic functions and implementations until a librarian is loged in.
+// This header file 'headings.hpp' consist of basic functions and implementations until a librarian is logged in. It also provide functionalities to display navigation options. This file is starting and ending point of application. Any of other files is not capable to start or end application.
 
 #ifndef HEADING_HPP
 #define HEADING_HPP
@@ -6,9 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <conio.h>
-#include "encryption.hpp" // consist of class Password
+#include "encryption.hpp" // consist of class 'Password'
 #include "libraryFunctions.hpp" // consist of library internal functions
-#include "librarianConfirmation.hpp"
+#include "librarianConfirmation.hpp" // librarian login functions
 
 void startingInstructions(void); // welcome page of library
 void newLibrarian(void); // function to create new Librarian
@@ -22,58 +22,63 @@ void startingInstructions()
     std::cout << "      Welcome to Library Management System      " << std::endl;
     std::cout << "------------------------------------------------" << std::endl;
 
-    // try to open librarian.txt
-    std::ifstream dataFile{"librarian.txt", std::ios::in};
+    std::ifstream dataFile{"librarian.txt", std::ios::in}; // try to open librarian.txt
 
-    if(!dataFile) { // if file doesn't exist, no librarian exists
+    // if file doesn't exist, no librarian exists
+    if(!dataFile) {
         newLibrarian(); // create new librarian
     }
-    else { // if file exist, at least one librarian exists
-        std::cout << "\nLibrarian Login\n"; // login
+    // if file exist, at least one librarian exists
+    else {
+        std::cout << "\nLibrarian Login\n"; // librarian login
         
+        // call 'librarianLogin' to perform login, it return true or false 
         if(librarianLogin()) {
+            // if librarian is logged in
             // show options since he is librarian
-            system("cls");
-            showOptions();
+
+            system("cls"); // clear screen
+            showOptions(); // show navigation options
         }
-        // else show error message
+        // else show message since he is not librarian
         else {
             std::cout << "\nAccess Denied" << std:: endl;
         }
     }
 
     dataFile.close(); // close the file 
-    return;
+    return; // return control
 }
 
 void newLibrarian(void) // to create new librarian
 {
     std::ofstream dataFile{"librarian.txt", std::ios::out}; // create new file
+    // if file is not created, exit the program
     if(!dataFile) {
         std::cerr << "cannot create file";
         exit(EXIT_FAILURE);
     }
 
-    std::string name, password;
+    std::string name, password; // to hold typed data
 
     // new librarian signup
-    std::cout << "\nLibrarian Signup\n";
-    std::cout << "\nEnter your Name: ";
-    getline(std::cin, name);
-    std::cout << "Enter new Password (only letters or digits): ";
-    password = getPassword();
+    std::cout << "\nLibrarian Signup\n"; 
+    std::cout << "\nEnter your Name: "; // prompt to enter name
+    getline(std::cin, name); // using 'getline' to insert spaces
+    std::cout << "Enter new Password (only letters or digits): "; // prompt to enter password
+    password = getPassword(); // using 'getPassword' to hide it from console
 
-    // create Password object to encrypt password and store it in file
+    // create Password object to encrypt password 
     Password newPerson{name, password};
-    dataFile << newPerson.getDetails() << std::endl;
+    dataFile << newPerson.getDetails() << std::endl; // store the data in file
     
     // show options since he is new librarian
-    system("cls");
-    showOptions();
+    system("cls"); // clear screen
+    showOptions(); 
 
-    dataFile.close();
+    dataFile.close(); // close the file
 
-    return;
+    return; // return control
 }
 
 void showOptions() // library navigation
@@ -91,6 +96,7 @@ void showOptions() // library navigation
     const int HIGHEST_OPTION{9};
 
     int num;
+    // loop until a number in range of lowest-highest is entered
     do
     {
         std::cout << "? ";
@@ -98,19 +104,22 @@ void showOptions() // library navigation
     }while(num < LOWEST_OPTION || num > HIGHEST_OPTION);
 
     // option 9 is exit library
-    // so if 9 is entered do not call doFunction
+    // so if 9 is entered do not call 'doFunction'
     if(num != 9) {
-        // call doFunction which will in response call function associated with entered number
+        // call 'doFunction; which will in response call function associated with entered number
         doFunction(num);
     }
     
+    // if 9 is entered by user
     // exit the library
     std::cout << "\nThankYou!" << std::endl;
-    exit(EXIT_SUCCESS);
+
+    exit(EXIT_SUCCESS); // exit the application, this is ending point of application
 }
 
 void doFunction(int choice) // to call specified function as entered by user
 {
+    // send control to case as entered by user
     switch(choice)
     {
         case 1: // new librarian
@@ -143,7 +152,7 @@ void doFunction(int choice) // to call specified function as entered by user
             break;
     }
 
-    std::cout << "\n\nPress any key to continue...";
+    std::cout << "\n\nPress any key to continue..."; // it is displayed at end of working of every option
     getch(); // wait for a key
     system("cls"); // clear screen
 

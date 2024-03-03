@@ -1,4 +1,4 @@
-// This header file consist of functions that can be selected by user in library. Each crossponds to a specific work as entered by user
+// This header file consist of functions that can be selected by user in library. Each corresponds to a specific work as entered by user. Each function here is self implemented and is not depended on any other function in this file
 
 #ifndef LIBRARYFUNCTIONS_HPP
 #define LIBRARYFUNCTIONS_HPP
@@ -7,99 +7,106 @@
 #include <string>
 #include <fstream>
 #include <windows.h>
-#include "book.hpp"
-#include "librarianConfirmation.hpp"
+#include "book.hpp" // consist of class 'Book' to make record of book
+#include "librarianConfirmation.hpp" // for librarian login
 
 // 1 - Add New Librarian
 void addNewLibrarian()
 {
-    system("cls");
+    system("cls"); // clear screen
 
-    std::cin.ignore();
+    std::cin.ignore(); // ignore last typed Enter
+
+    // if librarian is logged in
     if(librarianLogin()) {
-        std::string name, password;
+        std::string name, password; // to hold data
 
-        system("cls");
-        std::cout << "Enter New Librarian Name: ";
+        system("cls"); // clear screen
+        std::cout << "Enter New Librarian Name: "; // prompt for name
         getline(std::cin, name);
-        std::cout << "Enter new Password (only letters or digits): ";
+        std::cout << "Enter new Password (only letters or digits): "; // prompt for password
         password = getPassword();
 
-        Password newPerson{name, password};
+        Password newPerson{name, password}; // create object of 'Password' using typed data
 
-        std::fstream file{"librarian.txt", std::ios::in | std::ios::out | std::ios::app};
+        std::fstream file{"librarian.txt", std::ios::in | std::ios::out | std::ios::app}; // open librarian file
         if(!file) {
             std::cerr << "librarian file doesn't open";
             exit(EXIT_FAILURE);
         }
 
-        file << newPerson.getDetails() << '\n';
-        std::cout << "\nLibrarian Added";
+        file << newPerson.getDetails() << '\n'; // print new librarian data in file as a record
+        std::cout << "\nLibrarian Added"; // display message
     }
+    // if not logged in
     else {
-        std::cout << "\nAccess Denied";
+        std::cout << "\nAccess Denied"; // display message
     }
 
-    return;
+    return; // return control
 }
 
 // 2 - Add New Books
 void addNewBooks()
 {
-    system("cls");
+    system("cls"); // clear screen
 
-    std::cin.ignore();
+    std::cin.ignore(); // ignore last typed Enter
+
+    // if librarian is logged in
     if(librarianLogin()) {
-        std::fstream booksFile{"bookRecords.dat", std::ios::out | std::ios::in | std::ios::binary | std::ios::app};
+        std::fstream booksFile{"bookRecords.dat", std::ios::out | std::ios::in | std::ios::binary | std::ios::app}; // open books record file
 
         if(!booksFile) {
             std::cerr << "Cannot open file to add books";
             exit(EXIT_FAILURE);
         }
 
+        // variables to hold information of book
         int key;
         std::string isbn;
         std::string name;
         std::string genre;
         bool available;
 
-        int next;
+        int next; // used by loop
 
         do
         {
-            system("cls");
+            system("cls"); // clear screen
 
-            //deciding key
-            booksFile.seekg(0, std::ios::end);
-            int fileSize = booksFile.tellg();
-            int numBooks = fileSize / sizeof(Book);
-            key = numBooks > 0 ? numBooks : 0;
+            //deciding key, since it is generated automatically
+            booksFile.seekg(0, std::ios::end); // move to end of file
+            int fileSize = booksFile.tellg(); // get size of file
+            int numBooks = fileSize / sizeof(Book); // divide full file size to size of one record to get number of books
+            key = numBooks > 0 ? numBooks : 0; // set key
 
-            std::cout << "Enter ISBN: ";
+            std::cout << "Enter ISBN: "; // prompt for isbn
             std::cin >> isbn;
-            std::cout << "Enter Book Name: ";
+            std::cout << "Enter Book Name: "; // prompt for name
             std::cin.ignore();
-            getline(std::cin, name);
-            std::cout << "Enter Book Genre: ";
+            getline(std::cin, name); // name may include spaces
+            std::cout << "Enter Book Genre: "; // prompt for genre
             std::cin >> genre;
 
-            available = true;
+            available = true; // set availability to true
 
-            Book newBookRecord{key, isbn, name, genre, available};
+            Book newBookRecord{key, isbn, name, genre, available}; // make an object using above typed data
 
-            booksFile.write(reinterpret_cast<const char *>(&newBookRecord), sizeof(Book));
+            booksFile.write(reinterpret_cast<const char *>(&newBookRecord), sizeof(Book)); // write this record in binary file
 
-            std::cout << "Book Added" << std::endl;
+            std::cout << "Book Added" << std::endl; // successful message
 
-            std::cout << "\nAdd another book(1 or 0): ";
+            std::cout << "\nAdd another book(1 or 0): "; // if want to add more books
             std::cin >> next;
         }while(next == 1);
     }
+    // if not logged in
     else {
-        std::cout << "\nAccess Denied";
+        std::cout << "\nAccess Denied"; // show message
     }
 
-    return;
+    return; // return control
 }
 
 // 3 - Remove Old Book
