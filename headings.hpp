@@ -1,4 +1,4 @@
-// This header file consist of basic functions and implementations until a librarian is loged in.
+// This header file 'headings.hpp' consist of basic functions and implementations until a librarian is loged in.
 
 #ifndef HEADING_HPP
 #define HEADING_HPP
@@ -120,7 +120,7 @@ void doFunction(int choice) // to call specified function as entered by user
             addNewBooks();
             break;
         case 3: // remove books
-
+            removeOldBook();
             break;
         case 4: // check student details
 

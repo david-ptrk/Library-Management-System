@@ -11,6 +11,10 @@ public:
         setGenre(genre);
     }
 
+    void setKey(int num)
+    {
+        this->key = num;
+    }
     int getKey() const
     {
         return key;

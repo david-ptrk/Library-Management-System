@@ -102,6 +102,67 @@ void addNewBooks()
     return;
 }
 
+// 3 - Remove Old Book
+void removeOldBook()
+{
+    system("cls");
+
+    std::cin.ignore();
+    if(librarianLogin()) {
+        int delKey;
+        
+        system("cls");
+        std::cout << "Enter Book's key to be deleted: ";
+        std::cin >> delKey;
+
+        std::ifstream inputFile{"bookRecords.dat", std::ios::in | std::ios::binary};
+        if(!inputFile) {
+            std::cerr << "Cannot open file to remove book";
+            exit(EXIT_FAILURE);
+        }
+
+        std::ofstream outputFile{"temp.dat", std::ios::out | std::ios::binary};
+        if(!outputFile) {
+            std::cerr << "Cannot open file to remove book";
+            inputFile.close();
+            exit(EXIT_FAILURE);
+        }
+
+        int newKeys{0};
+        bool flag = false;
+
+        Book record;
+        while(inputFile.read(reinterpret_cast<char *>(&record), sizeof(Book)))
+        {
+            if(record.getKey() != delKey) {
+                record.setKey(newKeys++);
+                outputFile.write(reinterpret_cast<const char *>(&record), sizeof(Book));
+            }
+            else {
+                flag = true;
+            }
+        }
+
+        if(flag == true) {
+            std::cout << "Book Deleted" << '\n';
+        }
+        else {
+            std::cout << "Book doesn't exist" << '\n';
+        }
+
+        inputFile.close();
+        outputFile.close();
+
+        remove("bookRecords.dat");
+        rename("temp.dat", "bookRecords.dat");
+    }
+    else {
+        std::cout << "\nAccess Denied";
+    }
+
+    return;
+}
+
 // 8 - Search A Book
 void searchABook()
 {
