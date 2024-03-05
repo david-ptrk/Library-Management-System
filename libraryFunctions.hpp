@@ -9,6 +9,7 @@
 #include <windows.h>
 #include "book.hpp" // consist of class 'Book' to make record of book
 #include "librarianConfirmation.hpp" // for librarian login
+#include ".\shared\student.hpp"
 
 // 1 - Add New Librarian
 void addNewLibrarian()
@@ -162,6 +163,82 @@ void removeOldBook()
 
         remove("bookRecords.dat");
         rename("temp.dat", "bookRecords.dat");
+    }
+    else {
+        std::cout << "\nAccess Denied";
+    }
+
+    return;
+}
+
+// 4 - check student details
+void checkStudentDetails()
+{
+    system("cls");
+
+    std::cin.ignore();
+    if(librarianLogin()) {
+        std::cout << "1 - Search with RollNo" << '\t' << "2 - Display all Students" << std::endl << std::endl;
+
+        const int LOWEST_OPTION{1};
+        const int HIGHEST_OPTION{2};
+
+        int searchChoice;
+        do
+        {
+            std::cout << "? ";
+            std::cin >> searchChoice;
+        }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+        std::ifstream studentFile{"studentRecords.dat", std::ios::in | std::ios::binary};
+
+        if(!studentFile) {
+            std::cerr << "Cannot open file to read books";
+            exit(EXIT_FAILURE);
+        }
+
+        switch(searchChoice)
+        {
+            case 1:
+            {
+                int rollNo;
+                std::cout << "\nEnter roll no: ";
+                std::cin >> rollNo;
+
+                Student student;
+
+                studentFile.read(reinterpret_cast<char *>(&student), sizeof(Student));
+                while(studentFile)
+                {
+                    if(student.getRollNo() == rollNo) {
+                        std::cout << "\nResult:\n";
+                        std::cout << student;
+                        break;
+                    }
+                    studentFile.read(reinterpret_cast<char *>(&student), sizeof(Student));
+                }
+            }
+                break;
+            case 2:
+            {
+                Student student;
+
+                studentFile.read(reinterpret_cast<char *>(&student), sizeof(Student));
+                    std::cout << "\nResult:\n";
+                while(studentFile)
+                {
+                    std::cout << student;
+                    
+                    studentFile.read(reinterpret_cast<char *>(&student), sizeof(Student));
+                }
+            }
+                break;
+            default:
+                std::cerr << "control should not reach here";
+                break;
+        }
+
+        studentFile.close();
     }
     else {
         std::cout << "\nAccess Denied";

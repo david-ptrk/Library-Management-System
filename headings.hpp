@@ -132,7 +132,7 @@ void doFunction(int choice) // to call specified function as entered by user
             removeOldBook();
             break;
         case 4: // check student details
-
+            checkStudentDetails();
             break;
         case 5: // borrow a book
 
