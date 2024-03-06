@@ -117,17 +117,35 @@ void removeOldBook()
 
     std::cin.ignore();
     if(librarianLogin()) {
-        int delKey;
-        
-        system("cls");
-        std::cout << "Enter Book's key to be deleted: ";
-        std::cin >> delKey;
-
         std::ifstream inputFile{"bookRecords.dat", std::ios::in | std::ios::binary};
         if(!inputFile) {
             std::cerr << "Cannot open file to remove book";
             exit(EXIT_FAILURE);
         }
+
+        // This code is to checked after a book is issued to someone
+        // int availFlag = 1;
+        // Book checkBooks;
+        // while(inputFile.read(reinterpret_cast<char *>(&checkBooks), sizeof(Book)))
+        // {
+        //     if(checkBooks.getAvailable() == 0) {
+        //         availFlag = 0;
+        //         break;
+        //     }
+        // }
+
+        // if(availFlag == 0) {
+        //     std::cout << "Not all books are available";
+        //     return;
+        // }
+
+        // inputFile.seekg(0, std::ios::beg);
+
+        int delKey;
+        
+        system("cls");
+        std::cout << "Enter Book's key to be deleted: ";
+        std::cin >> delKey;
 
         std::ofstream outputFile{"temp.dat", std::ios::out | std::ios::binary};
         if(!outputFile) {

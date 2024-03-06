@@ -114,6 +114,7 @@ std::istream& operator>>(std::istream& input, Student& student)
     int age, gender, roll, sem;
     
     input >> first >> last >> age >> idCard >> gender >> roll >> phone; // input all data members
+    std::cin.ignore();
     getline(input, department); // department name can take space
     input >> sem;
 
