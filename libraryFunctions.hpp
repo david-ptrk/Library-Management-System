@@ -10,6 +10,7 @@
 #include "book.hpp" // consist of class 'Book' to make record of book
 #include "librarianConfirmation.hpp" // for librarian login
 #include ".\shared\student.hpp"
+#include "utilitys.hpp"
 
 // 1 - Add New Librarian
 void addNewLibrarian()
@@ -124,22 +125,22 @@ void removeOldBook()
         }
 
         // This code is to checked after a book is issued to someone
-        // int availFlag = 1;
-        // Book checkBooks;
-        // while(inputFile.read(reinterpret_cast<char *>(&checkBooks), sizeof(Book)))
-        // {
-        //     if(checkBooks.getAvailable() == 0) {
-        //         availFlag = 0;
-        //         break;
-        //     }
-        // }
+        int availFlag = 1;
+        Book checkBooks;
+        while(inputFile.read(reinterpret_cast<char *>(&checkBooks), sizeof(Book)))
+        {
+            if(checkBooks.getAvailable() == 0) {
+                availFlag = 0;
+                break;
+            }
+        }
 
-        // if(availFlag == 0) {
-        //     std::cout << "Not all books are available";
-        //     return;
-        // }
+        if(availFlag == 0) {
+            std::cout << "Not all books are available";
+            return;
+        }
 
-        // inputFile.seekg(0, std::ios::beg);
+        inputFile.seekg(0, std::ios::beg);
 
         int delKey;
         
@@ -262,6 +263,197 @@ void checkStudentDetails()
     }
     else {
         std::cout << "\nAccess Denied";
+    }
+
+    return;
+}
+
+// 5 - Borrow A Book
+void borrowABook()
+{
+    system("cls");
+    std::cout << "1 - For Student" << '\t' << "2 - For Teacher\n" << std::endl;
+
+    const int LOWEST_OPTION{1};
+    const int HIGHEST_OPTION{2};
+
+    int searchChoice;
+    do
+    {
+        std::cout << "? ";
+        std::cin >> searchChoice;
+    }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+    if(searchChoice == 1) {
+        int rollNo;
+
+        std::cout << "\n\nEnter your roll no: ";
+        std::cin >> rollNo;
+
+        std::ifstream studentFile{"studentRecords.dat", std::ios::in | std::ios::binary};
+        if(!studentFile) {
+            std::cerr << "cannot open student's records";
+            exit(EXIT_FAILURE);
+        }
+
+        Student student;
+        bool studentExist = false;
+        while(studentFile.read(reinterpret_cast<char *>(&student), sizeof(Student)))
+        {
+            if(student.getRollNo() == rollNo) {
+                studentExist = true;
+                int key;
+
+                std::cout << "Enter book key: ";
+                std::cin >> key;
+
+                std::fstream bookFile{"bookRecords.dat", std::ios::in | std::ios::out | std::ios::binary};
+                if(!bookFile) {
+                    std::cerr << "cannot open book's records";
+                    exit(EXIT_FAILURE);
+                }
+
+                Book book;
+                bool bookExist = false;
+                while(bookFile.read(reinterpret_cast<char *>(&book), sizeof(Book)))
+                {
+                    if((book.getKey() == key) && (book.getAvailable() == true)) {
+                        bookExist = true;
+
+                        Date today;
+                        std::cout << "\nBook Issued till " << today.getDate7();
+
+                        std::fstream issueFile{"issued.txt", std::ios::out | std::ios::app};
+                        if(!issueFile) {
+                            std::cerr << "cannot open issue file";
+                            exit(EXIT_FAILURE);
+                        }
+
+                        issueFile << rollNo << ' ' << key << ' ' << today.getDate7() << '\n'; 
+
+                        book.setAvailable(false);
+
+                        bookFile.seekp(static_cast<std::streamoff>(bookFile.tellp()) - sizeof(Book));
+                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book));
+
+                        break;
+                    }
+                }
+
+                if(bookExist == false) {
+                    std::cout << "\nBook not found";
+                }
+
+                bookFile.close();
+                break;
+            }
+        }
+
+        studentFile.close();
+        if(studentExist == false) {
+            std::cout << "\nStudent not found";
+        }
+    }
+    else if(searchChoice == 2) {
+
+    }
+
+    return;
+}
+
+// 6 - Return A Book
+void returnABook()
+{
+    system("cls");
+    std::cout << "1 - For Student" << '\t' << "2 - For Teacher\n" << std::endl;
+
+    const int LOWEST_OPTION{1};
+    const int HIGHEST_OPTION{2};
+
+    int searchChoice;
+    do
+    {
+        std::cout << "? ";
+        std::cin >> searchChoice;
+    }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+    if(searchChoice == 1) {
+        int rollNo;
+
+        std::cout << "\n\nEnter your roll no: ";
+        std::cin >> rollNo;
+
+        std::fstream issuedFile{"issued.txt", std::ios::in};
+        if(!issuedFile) {
+            std::cerr << "cannot open issued file";
+            exit(EXIT_FAILURE);
+        }
+
+        int fRollNo, fKey;
+        std::string fDate;
+
+        bool flag = false;
+        while(issuedFile >> fRollNo >> fKey >> fDate)
+        {
+            if(fRollNo == rollNo) {
+                std::fstream bookFile{"bookRecords.dat", std::ios::in | std::ios::out | std::ios::binary};
+                if(!bookFile) {
+                    std::cerr << "cannot open books file";
+                    exit(EXIT_FAILURE);
+                }
+
+                Book book;
+                while(bookFile.read(reinterpret_cast<char *>(&book), sizeof(Book)))
+                {
+                    if(book.getKey() == fKey) {
+                        book.setAvailable(true);
+
+                        bookFile.seekp(static_cast<std::streamoff>(bookFile.tellp()) - sizeof(Book));
+                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book));
+
+                        std::cout << "Book returned";
+
+                        break;
+                    }
+                }
+
+                bookFile.close();
+
+                flag = true;
+                break;
+            }
+        }
+
+        issuedFile.seekg(0, std::ios::beg);
+
+        if(flag != true) {
+            std::cout << "No book issued";
+        }
+        else {
+            std::ofstream file{"temp.txt", std::ios::out};
+            if(!file) {
+                std::cerr << "cannot open file";
+                exit(EXIT_FAILURE);
+            }
+
+            int fRollNo, fKey;
+            std::string fDate;
+            while(issuedFile >> fRollNo >> fKey >> fDate)
+            {
+                if(fRollNo != rollNo) {
+                    file << fRollNo << ' ' << fKey << ' ' << fDate << '\n';
+                }
+            }
+
+            file.close();
+            issuedFile.close();
+
+            remove("issued.txt");
+            rename("temp.txt", "issued.txt");
+        }
+    }
+    else if(searchChoice == 2) {
+
     }
 
     return;

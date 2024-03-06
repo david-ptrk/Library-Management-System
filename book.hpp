@@ -73,6 +73,10 @@ public:
     }
 
     // for data member 'available'
+    void setAvailable(bool n)
+    {
+        available = n;
+    }
     bool getAvailable() const
     {
         // this tell if book is available for issuing it to people

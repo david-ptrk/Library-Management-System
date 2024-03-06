@@ -135,10 +135,10 @@ void doFunction(int choice) // to call specified function as entered by user
             checkStudentDetails();
             break;
         case 5: // borrow a book
-
+            borrowABook();
             break;
         case 6: // return a book
-
+            returnABook();
             break;
         case 7: // renew date
 
