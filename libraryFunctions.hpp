@@ -178,6 +178,8 @@ void checkStudentDetails()
 
     std::cin.ignore();
     if(librarianLogin()) {
+        system("cls");
+
         std::cout << "1 - Search with RollNo" << '\t' << "2 - Display all Students" << std::endl << std::endl;
 
         const int LOWEST_OPTION{1};
@@ -227,7 +229,7 @@ void checkStudentDetails()
                     std::cout << "\nResult:\n";
                 while(studentFile)
                 {
-                    std::cout << student;
+                    std::cout << student.display() << '\n';
                     
                     studentFile.read(reinterpret_cast<char *>(&student), sizeof(Student));
                 }

@@ -114,7 +114,7 @@ std::istream& operator>>(std::istream& input, Student& student)
     int age, gender, roll, sem;
     
     input >> first >> last >> age >> idCard >> gender >> roll >> phone; // input all data members
-    input >> department; // there should be no space in department name
+    getline(input, department); // department name can take space
     input >> sem;
 
     // calling set functions to ensure our c-type strings proper handling
