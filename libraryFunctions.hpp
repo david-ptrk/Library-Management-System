@@ -7,10 +7,10 @@
 #include <string>
 #include <fstream>
 #include <windows.h>
-#include "book.hpp" // consist of class 'Book' to make record of book
+#include "book.hpp" // definition of class 'Book' to make record of book
 #include "librarianConfirmation.hpp" // for librarian login
-#include ".\shared\student.hpp"
-#include "utilitys.hpp"
+#include ".\shared\student.hpp"  // defintion of class 'Student'
+#include "utilitys.hpp" // definition of class 'Date' and 'MyTeacher'
 
 // 1 - Add New Librarian
 void addNewLibrarian()

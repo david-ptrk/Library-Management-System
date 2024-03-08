@@ -1,3 +1,5 @@
+// This file consist of multiple classes that are independent of each other. All of these came under the single banner of utilities since they can be used by multiple functionalities
+
 #ifndef UTILITYS_HPP
 #define UTILITYS_HPP
 
@@ -6,9 +8,11 @@
 #include <sstream>
 #include "./shared/teacher.hpp"
 
+// When created an object of 'Date', the object consist of current date, month, and year.
+// It can also return currentDay+7days and currentDay+14days
 class Date
 {
-    friend std::istream& operator>>(std::istream&, Date&);
+    friend std::istream& operator>>(std::istream&, Date&); // stream extraction operator
 public:
     Date()
     {
@@ -24,33 +28,40 @@ public:
         day = localTime->tm_mday;
     }
 
+    // return value of 'year'
     int getYear() const
     {
         return year;
     }
+    // return value of 'month'
     int getMonth() const
     {
         return month;
     }
+    // return value of 'day'
     int getDay() const
     {
         return day;
     }
 
+    // return current date as a string
     std::string getDate() const
     {
         std::ostringstream output;
-        output << getDay() << '-' << getMonth() << '-' << getYear();
+        output << getDay() << '-' << getMonth() << '-' << getYear(); // adding '-' between day, month, and year
 
-        return output.str();
+        return output.str(); // return as a string
     }
 
+    // return current date + 7 as a string
     std::string getDate7() const
     {
+        // make copies of day, month, and year
         int dd = getDay();
         int mm = getMonth();
         int yy = getYear();
 
+        // check for leap year
         bool leap = false;
         if(((yy % 100 == 0) && (yy % 400 == 0)) || ((yy % 100 != 0) && (yy % 4 == 0))) {
             leap = true;
@@ -87,17 +98,20 @@ public:
         }
 
         std::ostringstream output;
-        output << dd << '-' << mm << '-' << yy;
+        output << dd << '-' << mm << '-' << yy; // join day, month, and year
 
-        return output.str();
+        return output.str(); // return as a string
     }
 
+    // return current day + 14 days
     std::string getDate14() const
     {
+        // getting copies of day, month, and year
         int dd = getDay();
         int mm = getMonth();
         int yy = getYear();
 
+        // check for leap year
         bool leap = false;
         if(((yy % 100 == 0) && (yy % 400 == 0)) || ((yy % 100 != 0) && (yy % 4 == 0))) {
             leap = true;
@@ -134,13 +148,15 @@ public:
         }
 
         std::ostringstream output;
-        output << dd << '-' << mm << '-' << yy;
+        output << dd << '-' << mm << '-' << yy; // join all three of them
 
-        return output.str();
+        return output.str(); // return as a string
     }
 
+    // operator '>=' to check if a date is greater than or equal of another date
     bool operator>=(const Date& other) const
     {
+        // If year is greater, the first date is surely greater
         if(year > other.year) {
             return true;
         }
@@ -165,41 +181,47 @@ private:
     int day;
 };
 
+// stream extraction operator for 'Date'
 std::istream& operator>>(std::istream& input, Date& obj)
 {
     std::string dateString;
+    
+    // taking input as a string
     if (std::getline(input, dateString)) {
-        std::istringstream dateStream(dateString);
+        std::istringstream dateStream(dateString); // make stream of string
         char delimiter;
 
+        // extract individual elements from the stream
         dateStream >> obj.day >> delimiter >> obj.month >> delimiter >> obj.year;
     }
 
-    return input;
+    return input; // for cin >> a >> b >> c
 }
 
 
+// This class is inherited from class 'Teacher'. It only add 'code' on its base-class
 class MyTeacher : public Teacher
 {
     friend std::ostream& operator<<(std::ostream&, const MyTeacher&); // overloaded stream extraction operator
     friend std::istream& operator>>(std::istream&, MyTeacher&); // overloaded stream insertion operator
 public:
-    MyTeacher() = default;
-    MyTeacher(const std::string first, const std::string last, int age, const std::string card, bool gen, const std::string phone, const std::string department, const std::string rank, int code)
+    MyTeacher() = default; // default constructor
+    MyTeacher(const std::string first, const std::string last, int age, const std::string card, bool gen, const std::string phone, const std::string department, const std::string rank, int code) // argumented constructor
         : Teacher(first, last, age, card, gen, phone, department, rank) {
-            setCode(code);
+            setCode(code); // set code 
         }
     
     void setCode(int v)
     {
-        code = v;
+        code = v; // save in 'code'
         return;
     }
     int getCode() const
     {
-        return code;
+        return code; // return 'code'
     }
 
+    // overriding 'display' function of class 'Teacher'
     std::string display() const
     {
         std::ostringstream output; // creating object of class 'ostringstream'
@@ -211,12 +233,14 @@ private:
     int code;
 };
 
+// stream insertion operator for MyTeacher
 std::ostream& operator<<(std::ostream& output, const MyTeacher& teacher)
 {
     output << "First Name: " << teacher.getFirstName() << "\nLast Name: " << teacher.getLastName() <<  "\nAge: " << teacher.getAge() << "\nID Card Number: " << teacher.getIdCard() << "\nGender: " << (teacher.getGender() ? "Male" : "Female") << "\nCode: " << teacher.getCode() << "\nPhone Number: " << teacher.getPhoneNumber() << "\nDepartment: " << teacher.getDepartment() << "\nRank: " << teacher.getRank() << '\n'; // display in a fixed format
 
     return output; // enablea cout << a << b << c
 }
+// stream extraction operator for MyTeacher
 std::istream& operator>>(std::istream& input, MyTeacher& teacher)
 {
     std::string first, last, idCard, phone, department, rank;
