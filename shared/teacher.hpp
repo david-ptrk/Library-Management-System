@@ -72,7 +72,7 @@ public:
     std::string display() const
     {
         std::ostringstream output; // creating object of class 'ostringstream'
-        output << Person::display() << ' ' << ' ' << getPhoneNumber() << ' ' << getDepartment() << ' ' << getRank(); // concatenate all data members with spaces in between
+        output << Person::display() << ' ' << getPhoneNumber() << ' ' << getDepartment() << ' ' << getRank(); // concatenate all data members with spaces in between
 
         return output.str(); // return it as string
     }

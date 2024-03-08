@@ -1,4 +1,4 @@
-// Adding Students in file. This file is not to be used by librarian. This is just a test program to add students. Adding students is the working to admin
+// Adding Students in file. This file is not to be used by librarian. This is just a test program to add students. Adding students is the working of admin
 
 #include <iostream> //preprocessor directives
 #include <fstream>

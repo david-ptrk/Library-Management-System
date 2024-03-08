@@ -141,7 +141,7 @@ void doFunction(int choice) // to call specified function as entered by user
             returnABook();
             break;
         case 7: // renew date
-
+            renewDate();
             break;
         case 8: // search books
             searchABook();
