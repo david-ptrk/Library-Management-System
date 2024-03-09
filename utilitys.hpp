@@ -264,4 +264,27 @@ std::istream& operator>>(std::istream& input, MyTeacher& teacher)
     return input; // enables cin >> a >> b >> c
 }
 
+bool alreadyIssued(int num)
+{
+    std::ifstream issuedFile{"issued.txt", std::ios::in};
+    if(!issuedFile) {
+        std::cerr << "cannot open issued file";
+        exit(EXIT_FAILURE);
+    }
+
+    int unique, key;
+    std::string date;
+
+    while(issuedFile >> unique >> key >> date)
+    {
+        if(unique == num) {
+            issuedFile.close();
+            return true;
+        }
+    }
+
+    issuedFile.close();
+    return false;
+}
+
 #endif

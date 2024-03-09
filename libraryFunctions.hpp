@@ -324,6 +324,14 @@ void borrowABook()
             // if roll no matches
             if(student.getRollNo() == rollNo) {
                 studentExist = true; // student exist
+
+                if(alreadyIssued(rollNo)) {
+                    std::cout << "The Student already have a book issued";
+                    studentFile.close();
+
+                    return;
+                }
+
                 int key;
 
                 std::cout << "Enter book key: "; // prompt to enter book key
@@ -406,6 +414,14 @@ void borrowABook()
             // if code matched
             if(teacher.getCode() == code) {
                 teacherExist = true; // teacher exists
+
+                if(alreadyIssued(code)) {
+                    std::cout << "The Teacher already have a book issued";
+                    teacherFile.close();
+
+                    return;
+                }
+
                 int key;
 
                 std::cout << "Enter book key: "; // prompt to enter book key
