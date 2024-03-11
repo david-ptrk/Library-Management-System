@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <iomanip>
 #include <windows.h>
 #include "book.hpp" // definition of class 'Book' to make record of book
 #include "librarianConfirmation.hpp" // for librarian login
@@ -69,7 +70,7 @@ void addNewBooks()
         std::string isbn;
         std::string name;
         std::string genre;
-        bool available;
+        int quantity;
 
         int next; // used by loop
 
@@ -90,10 +91,10 @@ void addNewBooks()
             getline(std::cin, name); // name may include spaces
             std::cout << "Enter Book Genre: "; // prompt for genre
             std::cin >> genre;
+            std::cout << "Enter Quanity Available: ";
+            std::cin >> quantity;
 
-            available = true; // set availability to true
-
-            Book newBookRecord{key, isbn, name, genre, available}; // make an object using above typed data
+            Book newBookRecord{key, isbn, name, genre, quantity}; // make an object using above typed data
 
             booksFile.write(reinterpret_cast<const char *>(&newBookRecord), sizeof(Book)); // write this record in binary file
 
@@ -102,6 +103,8 @@ void addNewBooks()
             std::cout << "\nAdd another book(1 or 0): "; // if want to add more books
             std::cin >> next;
         }while(next == 1);
+
+        booksFile.close();
     }
     // if not logged in
     else {
@@ -127,22 +130,22 @@ void removeOldBook()
         }
 
         // check if any book is issued to someone
-        int availFlag = 1;
-        Book checkBooks;
-        while(inputFile.read(reinterpret_cast<char *>(&checkBooks), sizeof(Book)))
-        {
-            // if a book is issued to someone i.e. available = 0
-            if(checkBooks.getAvailable() == 0) {
-                availFlag = 0; // set flag to false
-                break;
-            }
-        }
+        // int availFlag = 1;
+        // Book checkBooks;
+        // while(inputFile.read(reinterpret_cast<char *>(&checkBooks), sizeof(Book)))
+        // {
+        //     // if al copies of book is issued i.e. quanity = 0
+        //     if(checkBooks.getQuantity() == 0) {
+        //         availFlag = 0; // set flag to false
+        //         break;
+        //     }
+        // }
 
-        // if flag is flag, at least one book is issued
-        if(availFlag == 0) {
-            std::cout << "Not all books are available";
-            return; // return control, and doesn't allow to remove old book
-        }
+        // // if flag is flag, at least one book is issued
+        // if(availFlag == 0) {
+        //     std::cout << "Not all books are available";
+        //     return; // return control, and doesn't allow to remove old book
+        // }
 
         inputFile.seekg(0, std::ios::beg); // seek to beginning of file
 
@@ -210,9 +213,9 @@ void checkStudentDetails()
     if(librarianLogin()) {
         system("cls");
 
-        std::cout << "1 - Search with RollNo" << '\t' << "2 - Display all Students" << std::endl << std::endl;
+        std::cout << "1 - Search with RollNo" << '\t' << "2 - Display all Students" << '\n' << "0 - Return" << std::endl << std::endl;
 
-        const int LOWEST_OPTION{1};
+        const int LOWEST_OPTION{0};
         const int HIGHEST_OPTION{2};
 
         int searchChoice;
@@ -222,6 +225,10 @@ void checkStudentDetails()
             std::cout << "? ";
             std::cin >> searchChoice;
         }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+        if(searchChoice == 0) {
+            return;
+        }
 
         std::ifstream studentFile{"studentRecords.dat", std::ios::in | std::ios::binary}; // open student's records file
 
@@ -291,9 +298,9 @@ void borrowABook()
 {
     system("cls");
     // students are issued books for 7 days and teachers for 14 days
-    std::cout << "1 - For Student" << '\t' << "2 - For Teacher\n" << std::endl;
+    std::cout << "1 - For Student" << '\t' << "2 - For Teacher" << '\n' << "0 - Return" << '\n' << std::endl;
 
-    const int LOWEST_OPTION{1};
+    const int LOWEST_OPTION{0};
     const int HIGHEST_OPTION{2};
 
     int searchChoice;
@@ -303,6 +310,10 @@ void borrowABook()
         std::cout << "? ";
         std::cin >> searchChoice;
     }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+    if(searchChoice == 0) {
+        return;
+    }
 
     // if student want to borrow book
     if(searchChoice == 1) {
@@ -349,7 +360,7 @@ void borrowABook()
                 while(bookFile.read(reinterpret_cast<char *>(&book), sizeof(Book))) // read a book record
                 {
                     // if the key of book matched with input key, and the book is available
-                    if((book.getKey() == key) && (book.getAvailable() == true)) {
+                    if((book.getKey() == key) && (book.getQuantity() > 0)) {
                         bookExist = true; // book exist
 
                         Date today; // create object of 'Date' initialized with current date
@@ -367,11 +378,11 @@ void borrowABook()
                         // write data of student and issued book is file
                         issueFile << rollNo << ' ' << key << ' ' << today.getDate7() << '\n'; 
 
-                        book.setAvailable(false); // set book availability to false;
+                        book.reduceOneQuantity();
 
                         // seek back to start of record
                         bookFile.seekp(static_cast<std::streamoff>(bookFile.tellp()) - sizeof(Book));
-                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book)); // write book record with availability marked to false
+                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book));
 
                         break;
                     }
@@ -403,7 +414,7 @@ void borrowABook()
 
         std::ifstream teacherFile{"teacherRecords.dat", std::ios::in | std::ios::binary}; // open teachers' records file
         if(!teacherFile) {
-            std::cerr << "cannot open student's records";
+            std::cerr << "cannot open teacher's records";
             exit(EXIT_FAILURE);
         }
 
@@ -439,7 +450,7 @@ void borrowABook()
                 while(bookFile.read(reinterpret_cast<char *>(&book), sizeof(Book))) // read a record from book file
                 {
                     // if book key matched, and book is avaiable
-                    if((book.getKey() == key) && (book.getAvailable() == true)) {
+                    if((book.getKey() == key) && (book.getQuantity() > 0)) {
                         bookExist = true; // book exists
 
                         Date today; // object of 'Date' will be initialized with current date
@@ -456,11 +467,11 @@ void borrowABook()
 
                         issueFile << code << ' ' << key << ' ' << today.getDate14() << '\n'; // write issued book and teacher details in issue file
 
-                        book.setAvailable(false); // set book's availability to false
+                        book.reduceOneQuantity();
 
                         // seek back to start of the record
                         bookFile.seekp(static_cast<std::streamoff>(bookFile.tellp()) - sizeof(Book));
-                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book)); // write record of book in file with availability set to false
+                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book)); 
 
                         break;
                     }
@@ -491,7 +502,7 @@ void borrowABook()
 void returnABook()
 {
     system("cls");
-    std::cout << "1 - For Student" << '\t' << "2 - For Teacher\n" << std::endl;
+    std::cout << "1 - For Student" << '\t' << "2 - For Teacher" << '\n' << "0 - Return" << '\n' << std::endl;
 
     const int LOWEST_OPTION{1};
     const int HIGHEST_OPTION{2};
@@ -536,11 +547,11 @@ void returnABook()
                 {
                     // if key matched
                     if(book.getKey() == fKey) {
-                        book.setAvailable(true); // set availability to true
+                        book.increaseOneQuantity();
 
                         // seek back to start of record
                         bookFile.seekp(static_cast<std::streamoff>(bookFile.tellp()) - sizeof(Book));
-                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book)); // write record with availability set to true
+                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book));
 
                         Date toDay; // get current date
                         if(fDate >= toDay) { // if returned date is greated today i.e. not reached last date
@@ -629,11 +640,11 @@ void returnABook()
                 {
                     // if key matched
                     if(book.getKey() == fKey) {
-                        book.setAvailable(true); // set available to true
+                        book.increaseOneQuantity();
 
                         // seek to start of record
                         bookFile.seekp(static_cast<std::streamoff>(bookFile.tellp()) - sizeof(Book));
-                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book)); // write record as availability set to true
+                        bookFile.write(reinterpret_cast<const char *>(&book), sizeof(Book));
 
                         Date toDay; // get current date
                         if(fDate >= toDay) { // if return date is greater than today
@@ -696,9 +707,9 @@ void returnABook()
 void renewDate()
 {
     system("cls");
-    std::cout << "1 - For Student" << '\t' << "2 - For Teacher\n" << std::endl;
+    std::cout << "1 - For Student" << '\t' << "2 - For Teacher" << '\n' << "0 - Return" << '\n' << std::endl;
 
-    const int LOWEST_OPTION{1};
+    const int LOWEST_OPTION{0};
     const int HIGHEST_OPTION{2};
 
     int searchChoice;
@@ -708,6 +719,10 @@ void renewDate()
         std::cout << "? ";
         std::cin >> searchChoice;
     }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+    if(searchChoice == 0) {
+        return;
+    }
 
     // for student
     if(searchChoice == 1) {
@@ -840,9 +855,9 @@ void renewDate()
 void searchABook()
 {
     system("cls");
-    std::cout << "1 - Search with Key" << '\t' << "2 - Search with Name" << '\n' << "3 - Search with ISBN" << "\t" << "4 - Filter using genre" << '\n' << "5 - Get Full List" << std::endl << std::endl;
+    std::cout << "1 - Search with Key" << '\t' << "2 - Search with Name" << '\n' << "3 - Search with ISBN" << "\t" << "4 - Filter using genre" << '\n' << "5 - Get Full List" << '\t' << "0 - Return" << std::endl << std::endl;
 
-    const int LOWEST_OPTION{1};
+    const int LOWEST_OPTION{0};
     const int HIGHEST_OPTION{5};
 
     int searchChoice;
@@ -852,6 +867,10 @@ void searchABook()
         std::cout << "? ";
         std::cin >> searchChoice;
     }while(searchChoice < LOWEST_OPTION || searchChoice > HIGHEST_OPTION);
+
+    if(searchChoice == 0) {
+        return;
+    }
 
     std::fstream booksFile{"bookRecords.dat", std::ios::in | std::ios::binary}; // open books' records file
 
@@ -875,7 +894,8 @@ void searchABook()
             booksFile.seekg(key * sizeof(Book));
             booksFile.read(reinterpret_cast<char *>(&libraryBook), sizeof(Book)); // read the record
 
-            std::cout << "\nResult:\n";
+            std::cout << '\n';
+            std::cout << std::setw(3) << "Key" << std::setw(50) << "Name" << std::setw(18) << "ISBN" << std::setw(18) << "Genre" << std::setw(15) << "Quantity" << '\n';
             std::cout << libraryBook.getDetails(); // display the record
         }
             break;
@@ -892,7 +912,8 @@ void searchABook()
             {
                 // if name matches
                 if(libraryBook.getName() == name) {
-                    std::cout << "\nResult:\n";
+                    std::cout << '\n';
+                    std::cout << std::setw(3) << "Key" << std::setw(50) << "Name" << std::setw(18) << "ISBN" << std::setw(18) << "Genre" << std::setw(15) << "Quantity" << '\n';
                     std::cout << libraryBook.getDetails(); // display the record
                     break;
                 }
@@ -914,7 +935,8 @@ void searchABook()
             {
                 // if isbn matches
                 if(libraryBook.getIsbn() == isbn) {
-                    std::cout << "\nResult:\n";
+                    std::cout << '\n';
+                    std::cout << std::setw(3) << "Key" << std::setw(50) << "Name" << std::setw(18) << "ISBN" << std::setw(18) << "Genre" << std::setw(15) << "Quantity" << '\n';
                     std::cout << libraryBook.getDetails(); // display the record
                     break;
                 }
@@ -932,7 +954,8 @@ void searchABook()
 
             Book libraryBook;
             booksFile.read(reinterpret_cast<char *>(&libraryBook), sizeof(Book)); // read a record from file
-            std::cout << "\nResult:\n";
+            std::cout << '\n';
+            std::cout << std::setw(3) << "Key" << std::setw(50) << "Name" << std::setw(18) << "ISBN" << std::setw(18) << "Genre" << std::setw(15) << "Quantity" << '\n';
             while(booksFile)
             {
                 // if genre matches
@@ -951,7 +974,8 @@ void searchABook()
             Book libraryBook;
 
             booksFile.read(reinterpret_cast<char *>(&libraryBook), sizeof(Book)); // read a record
-            std::cout << "\nResult:\n";
+            std::cout << '\n';
+            std::cout << std::setw(3) << "Key" << std::setw(50) << "Name" << std::setw(18) << "ISBN" << std::setw(18) << "Genre" << std::setw(15) << "Quantity" << '\n';
             while(booksFile)
             {
                 std::cout << libraryBook.getDetails() << std::endl; // display it without any condition, since all record are to be displayed

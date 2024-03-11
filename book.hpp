@@ -6,14 +6,18 @@
 // preprocessor directives
 #include <string>
 #include <sstream>
+#include <iomanip>
+// #include <exception>
 
 class Book
 {
 public:
     // constructor provide default value for all attributes
     // it help to make object without providing autual data
-    Book(int keyV = -1, std::string isbn = "", std::string name = "", std::string genre = "", bool availableV = false)
-        : key{keyV}, available{availableV} {
+    Book(int keyV = -1, std::string isbn = "", std::string name = "", std::string genre = "", int quantityV = 0)
+        : key{keyV} {
+            setQuantity(quantityV);
+
         // functions must be call since 'string' must be converted to 'C-typed string'
         setIsbn(isbn);
         setName(name);
@@ -34,7 +38,7 @@ public:
     void setName(std::string bookName)
     {
         size_t length = bookName.size(); // get size of string
-        length = length < 100 ? length : 99; // size must be one less then size of 'name'
+        length = length < 50 ? length : 49; // size must be one less then size of 'name'
         bookName.copy(name, length); // copy characters from string to 'name'
         name[length] = '\0'; // add terminating letter at end of 'name'
     }
@@ -48,7 +52,7 @@ public:
     void setGenre(std::string bookGenre)
     {
         size_t length = bookGenre.size(); // get size of string
-        length = length < 30 ? length : 29; // size must be one less then size of 'genre'
+        length = length < 15 ? length : 14; // size must be one less then size of 'genre'
         bookGenre.copy(genre, length); // copy characters from string to 'genre'
         genre[length] = '\0'; // add terminating letter at end of 'genre'
     }
@@ -72,33 +76,46 @@ public:
         return bookIsbn; // return as string
     }
 
-    // for data member 'available'
-    void setAvailable(bool n)
+    // for data member 'quantity'
+    void setQuantity(int n)
     {
-        available = n;
+        if(n < 0) {
+            throw std::invalid_argument{"book quantity cannot be less than zero"};
+        }
+
+        quantity = n;
+        return;
     }
-    bool getAvailable() const
+    int getQuantity() const
     {
         // this tell if book is available for issuing it to people
-        return available;
+        return quantity;
+    }
+    void reduceOneQuantity()
+    {
+        --quantity;
+    }
+    void increaseOneQuantity()
+    {
+        ++quantity;
     }
 
     // to concatenate all data
     std::string getDetails() const
     {
         std::ostringstream output;
-        output << getKey() << ' ' << getName() << ' ' << getIsbn() << ' ' << getGenre() << ' ' << getAvailable(); // concatenate all member with spaces in between
+        output << std::setw(3) << getKey() << std::setw(50) << getName() << std::setw(18) << getIsbn() << std::setw(18) << getGenre() << std::setw(15) << getQuantity();
 
         return output.str(); // return as string
     }
 private:
     int key; // unique key of book
-    bool available; // availability of book
+    int quantity; // number of same book available
 
     // 'c-type strings' are used since it is fixed sized, and fixed size is necessary for writing records in binary file
     char isbn[14]; // isbn of book
-    char name[100]; // name of book
-    char genre[30]; // genre of book
+    char name[50]; // name of book
+    char genre[15]; // genre of book
 };
 
 #endif
