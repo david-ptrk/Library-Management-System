@@ -9,10 +9,18 @@
 #include <exception>
 #include <sstream>
 
-class Person
-{
+class Person {
     friend std::ostream& operator<<(std::ostream&, const Person&); // overloaded stream extraction operator
     friend std::istream& operator>>(std::istream&, Person&); // overloaded stream insertion operator
+
+private:
+    // c-type strings are used for string data memeber, so they will be fixed in length and can be written in binary file
+    char firstName[15]; // to hold first name
+    char lastName[15]; // to hold last name
+    int age; // to hold age
+    char idCard[15]; // to hold id card number
+    bool gender; // to hold gender (1 for male, 0 for female)
+
 public:
     Person() = default; // default constructor
     Person(const std::string first, const std::string last, int age, const std::string card, bool gen) // constructor with arguments
@@ -26,88 +34,68 @@ public:
 
     const int SIZE_OF_DATA_MEMBERS{15}; // this is size of 'firstName', 'lastName', and 'idCard'
 
-    // for first name
-    void setFirstName(const std::string name)
-    {
+    void setFirstName(const std::string name) {
         size_t length = name.size(); // getting size of string 'name'
         length = length < SIZE_OF_DATA_MEMBERS ? length : (SIZE_OF_DATA_MEMBERS - 1); // size must be one less than size of data member 'firstName'
-        name.copy(firstName, length); // copy in 'firstName' one less than its size
-        firstName[length] = '\0'; // add null character at end of array
+        name.copy(this->firstName, length); // copy in 'firstName' one less than its size
+        this->firstName[length] = '\0'; // add null character at end of array
+        return;
     }
-    std::string getFirstName() const
-    {
-        std::string name{firstName}; // create string object of array 'firstName'
-        return name; // return string
+    std::string getFirstName() const {
+        std::string name{this->firstName}; // create string object of array 'firstName'
+        return name;
     }
 
-    // for last name
-    void setLastName(const std::string name)
-    {
+    void setLastName(const std::string name) {
         size_t length = name.size(); // getting size of string 'name'
         length = length < SIZE_OF_DATA_MEMBERS ? length : (SIZE_OF_DATA_MEMBERS - 1); // size must be one less than size of data member 'lastName'
-        name.copy(lastName, length); // copy in 'lastName' one less than its size
-        lastName[length] = '\0'; // add null character at end of array
+        name.copy(this->lastName, length); // copy in 'lastName' one less than its size
+        this->lastName[length] = '\0'; // add null character at end of array
+        return;
     }
-    std::string getLastName() const
-    {
-        std::string name{lastName}; // create string object of array 'lastName'
-        return name; // return string
+    std::string getLastName() const {
+        std::string name{this->lastName}; // create string object of array 'lastName'
+        return name;
     }
 
-    // for id card number
-    void setIdCard(const std::string num)
-    {
+    void setIdCard(const std::string num) {
         size_t length = num.size(); // getting size of string 'num'
         length = length < SIZE_OF_DATA_MEMBERS ? length : (SIZE_OF_DATA_MEMBERS - 1); // size must be one less than size of data member 'idCard'
-        num.copy(idCard, length); // copy in 'idCard' one less than its size
-        idCard[length] = '\0'; // ass null character at end of array
+        num.copy(this->idCard, length); // copy in 'idCard' one less than its size
+        this->idCard[length] = '\0'; // ass null character at end of array
+        return;
     }
-    std::string getIdCard() const
-    {
-        std::string card{idCard}; // create string object of array 'idCard'
-        return card; // return string
+    std::string getIdCard() const {
+        std::string card{this->idCard}; // create string object of array 'idCard'
+        return card;
     }
 
-    // for age
-    void setAge(int age)
-    {
-        // if age is not between 18-60
-        if(age < 18 || age > 70) {
+    void setAge(int age) {
+        if(age < 18 || age > 70) { // if age is not between 18-60
             throw std::invalid_argument{"age must be between 18-60"}; // throw error
         }
 
-        this->age = age; // otherwise store age in data member 'age'
+        this->age = age;
+        return;
     }
-    int getAge() const
-    {
-        return age; // return 'age'
+    int getAge() const {
+        return this->age;
     }
 
-    // for gender
-    void setGender(bool gen)
-    {
-        gender = gen; // 1 is for male, 0 is for female
+    void setGender(bool gen) {
+        this->gender = gen; // 1 is for male, 0 is for female
     }
-    bool getGender() const
-    {
-        return gender; // return 'gender'
+    bool getGender() const {
+        return this->gender;
     }
 
     // 'display' return as a concatenated record of all data members
-    std::string display() const
-    {
-        std::ostringstream output; // creating object of class 'ostringstream'
+    std::string display() const {
+        std::ostringstream output;
         output << getFirstName() << ' ' << getLastName() << ' ' << getAge() << ' ' << getIdCard() << ' ' << getGender(); // concatenate all data members with spaces in between
 
         return output.str(); // return it as string
     }
-private:
-    // c-type strings are used for string data memeber, so they will be fixed in length and can be written in binary file
-    char firstName[15]; // to hold first name
-    char lastName[15]; // to hold last name
-    int age; // to hold age
-    char idCard[15]; // to hold id card number
-    bool gender; // to hold gender (1 for male, 0 for female)
 };
 
 
