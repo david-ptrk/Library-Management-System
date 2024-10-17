@@ -46,12 +46,6 @@ Run:
 3. Explore the public features such as borrowing a book, returing a book, renewing return date, and search a book.
 ```
 
-
-## Screenshots
-
-![App Screenshot1](https://github.com/david-ptrk/pictures/blob/main/screenshot1.jpg?raw=true)
-
-![App Screenshot1](https://github.com/david-ptrk/pictures/blob/main/screenshot2.jpg?raw=true)
 ## Acknowledgments
 
 - [ReadMe.so](https://readme.so/) - Simplifying README creation.
